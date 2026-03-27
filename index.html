@@ -1,23 +1,503 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>La Voie des Saisons</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>La Voie des Saisons – Le Saisonisme</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=Raleway:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-<!-- React -->
-<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    :root {
+      --bg: #0d1b2a;
+      --accent: #e8a45a;
+      --text: #f5f0e8;
+      --soft: #4a7c9e;
+      --muted: rgba(245,240,232,0.6);
+    }
 
-<!-- Babel (compile JSX dans le navigateur) -->
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    html { scroll-behavior: smooth; }
 
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Raleway', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 1.5rem 3rem;
+      display: flex; justify-content: space-between; align-items: center;
+      background: linear-gradient(to bottom, rgba(13,27,42,.92), transparent);
+      backdrop-filter: blur(4px);
+    }
+    .nav-logo {
+      font-family: 'Cinzel', serif; font-size: .7rem;
+      letter-spacing: .45em; color: var(--accent); text-transform: uppercase;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-family: 'Cinzel', serif; font-size: .62rem;
+      letter-spacing: .3em; color: var(--muted);
+      text-decoration: none; text-transform: uppercase; transition: color .3s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      background: radial-gradient(ellipse at 30% 20%, #1a3a5c 0%, var(--bg) 60%);
+    }
+    #stars { position: absolute; inset: 0; pointer-events: none; }
+    .star {
+      position: absolute; border-radius: 50%; background: white;
+      animation: twinkle var(--dur) ease-in-out infinite; opacity: 0;
+    }
+    @keyframes twinkle {
+      0%,100%{opacity:0;transform:scale(.5)}
+      50%{opacity:var(--op);transform:scale(1)}
+    }
+    .mountain-bg { position: absolute; bottom: 0; left: 0; right: 0; height: 250px; opacity: .13; }
+    .waves-bg    { position: absolute; bottom: 0; left: 0; right: 0; height: 200px; opacity: .15; }
+
+    .hero-content { position: relative; z-index: 2; text-align: center; padding: 2rem; }
+    .eyebrow {
+      font-family: 'Cinzel', serif; font-size: .68rem;
+      letter-spacing: .5em; color: var(--accent); text-transform: uppercase;
+      margin-bottom: 2rem; opacity: 0; animation: fadeUp 1s ease forwards .3s;
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.5rem, 10vw, 8rem); font-weight: 300; line-height: 1;
+      margin-bottom: .5rem; opacity: 0; animation: fadeUp 1s ease forwards .6s;
+    }
+    .hero-subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1rem, 2.5vw, 1.4rem); font-style: italic;
+      color: var(--soft); letter-spacing: .15em; margin-bottom: 3rem;
+      opacity: 0; animation: fadeUp 1s ease forwards .9s;
+    }
+    .hero-tagline {
+      max-width: 480px; margin: 0 auto 3rem;
+      font-size: 1rem; line-height: 2; color: rgba(245,240,232,.68);
+      opacity: 0; animation: fadeUp 1s ease forwards 1.2s;
+    }
+    .scroll-cue {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: .5rem;
+      opacity: 0; animation: fadeUp 1s ease forwards 2s;
+    }
+    .scroll-cue span {
+      font-family: 'Cinzel', serif; font-size: .58rem;
+      letter-spacing: .4em; color: var(--accent); opacity: .6; text-transform: uppercase;
+    }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%,100%{opacity:.3;transform:scaleY(.7)} 50%{opacity:1;transform:scaleY(1)}
+    }
+    @keyframes fadeUp {
+      from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)}
+    }
+
+    /* SECTIONS */
+    .section-wrap { padding: 8rem 2rem; max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-family: 'Cinzel', serif; font-size: .63rem;
+      letter-spacing: .5em; color: var(--accent); text-transform: uppercase;
+      margin-bottom: 3rem; display: flex; align-items: center; gap: 1.5rem;
+    }
+    .section-label::after {
+      content:''; flex:1; max-width:80px; height:1px; background:var(--accent); opacity:.4;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.5rem, 6vw, 5rem); font-weight: 300;
+      line-height: 1.1; margin-bottom: 2rem;
+    }
+
+    /* PROLOGUE */
+    .prologue {
+      border-left: 2px solid var(--accent); padding: 4rem 3rem 4rem 4rem;
+      background: linear-gradient(135deg, rgba(44,74,110,.15) 0%, transparent 60%);
+      position: relative; margin-top: 2rem;
+    }
+    .prologue::before {
+      content:'"'; position: absolute; top: -1rem; left: 1.5rem;
+      font-family: 'Cormorant Garamond', serif; font-size: 8rem;
+      color: var(--accent); opacity: .28; line-height: 1;
+    }
+    .prologue p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+      line-height: 2; font-style: italic;
+      color: rgba(245,240,232,.83); margin-bottom: 1.5rem;
+    }
+
+    /* RETREATS */
+    #retraites { padding: 8rem 0; }
+    #retraites .head { max-width: 1100px; margin: 0 auto; padding: 0 2rem 3rem; }
+    .retreats-grid {
+      max-width: 1100px; margin: 0 auto; padding: 0 2rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+    }
+    .retreat-card {
+      position: relative; overflow: hidden; min-height: 500px;
+      display: flex; flex-direction: column; justify-content: flex-end; padding: 3rem;
+    }
+    .retreat-card-bg { position: absolute; inset: 0; transition: transform .7s ease; }
+    .retreat-card:hover .retreat-card-bg { transform: scale(1.05); }
+    .card-white .retreat-card-bg {
+      background: linear-gradient(135deg, #c8d8e8 0%, #8ba7c4 40%, #2c4a6e 100%);
+    }
+    .card-tide .retreat-card-bg {
+      background: linear-gradient(135deg, #1a4a6e 0%, #e8a45a 100%);
+    }
+    .retreat-card-overlay {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(to top, rgba(13,27,42,.85) 0%, transparent 60%);
+    }
+    .retreat-content { position: relative; z-index: 2; }
+    .retreat-season {
+      font-family: 'Cinzel', serif; font-size: .58rem;
+      letter-spacing: .5em; color: var(--accent); text-transform: uppercase; margin-bottom: 1rem;
+    }
+    .retreat-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 300; line-height: 1.1; margin-bottom: 1rem;
+    }
+    .retreat-meaning {
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: 1.08rem; color: rgba(245,240,232,.65); margin-bottom: 2rem;
+    }
+    .tags { display: flex; gap: .75rem; flex-wrap: wrap; }
+    .tag {
+      font-family: 'Cinzel', serif; font-size: .52rem;
+      letter-spacing: .3em; padding: .4rem 1rem;
+      border: 1px solid rgba(232,164,90,.4); color: var(--accent); text-transform: uppercase;
+    }
+
+    /* RITUALS */
+    #rituels {
+      background: rgba(44,74,110,.08);
+      border-top: 1px solid rgba(232,164,90,.1);
+      border-bottom: 1px solid rgba(232,164,90,.1);
+    }
+    .ritual-toggle {
+      display: flex; margin-bottom: 5rem;
+      border: 1px solid rgba(232,164,90,.3); width: fit-content;
+    }
+    .ritual-btn {
+      font-family: 'Cinzel', serif; font-size: .62rem; letter-spacing: .4em;
+      padding: 1rem 2.5rem; background: transparent; border: none;
+      color: rgba(245,240,232,.4); cursor: pointer; text-transform: uppercase; transition: all .3s;
+    }
+    .ritual-btn.active { background: var(--accent); color: #0d1b2a; }
+    .ritual-context {
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: 1.08rem; color: rgba(245,240,232,.48); margin-bottom: 3rem;
+    }
+    .rituals-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 3rem;
+    }
+    .ritual-number {
+      font-family: 'Cormorant Garamond', serif; font-size: 5rem;
+      font-weight: 300; color: rgba(232,164,90,.15); line-height: 1; margin-bottom: -.75rem;
+    }
+    .ritual-name {
+      font-family: 'Cinzel', serif; font-size: .7rem;
+      letter-spacing: .3em; color: var(--accent); text-transform: uppercase; margin-bottom: 1rem;
+    }
+    .ritual-desc {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.08rem;
+      line-height: 1.85; color: rgba(245,240,232,.7);
+    }
+
+    /* EDUCATION */
+    .education-block {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;
+    }
+    .edu-intro {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.18rem;
+      line-height: 1.9; color: rgba(245,240,232,.74); margin-bottom: 2rem;
+    }
+    .edu-duties { list-style: none; }
+    .edu-duties li {
+      display: flex; gap: 1.5rem; padding: 1.5rem 0;
+      border-bottom: 1px solid rgba(232,164,90,.15);
+      font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;
+      line-height: 1.65; color: rgba(245,240,232,.8);
+    }
+    .edu-duties li::before { content:'◈'; font-size: 1.1rem; flex-shrink: 0; color: var(--accent); }
+    .principle-box {
+      border: 1px solid rgba(232,164,90,.35); padding: 3rem; position: relative;
+    }
+    .principle-box::before {
+      content: 'Ier Principe'; position: absolute; top: -.7rem; left: 2rem;
+      font-family: 'Cinzel', serif; font-size: .58rem; letter-spacing: .4em;
+      background: var(--bg); padding: 0 .75rem; color: var(--accent); text-transform: uppercase;
+    }
+    .principle-text {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.45rem;
+      font-style: italic; line-height: 1.85; font-weight: 300;
+    }
+    .principle-text strong { font-weight: 400; color: var(--accent); font-style: normal; }
+
+    /* FOOTER */
+    footer { border-top: 1px solid rgba(232,164,90,.15); padding: 5rem 2rem; text-align: center; }
+    .footer-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem; font-weight: 300; font-style: italic; margin-bottom: 1rem;
+    }
+    .footer-sub {
+      font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: .5em;
+      color: var(--accent); text-transform: uppercase; margin-bottom: 3rem;
+    }
+    .footer-cta {
+      font-family: 'Cinzel', serif; font-size: .63rem; letter-spacing: .4em;
+      text-transform: uppercase; padding: 1.2rem 3rem;
+      border: 1px solid var(--accent); color: var(--accent);
+      background: transparent; cursor: pointer; transition: all .3s; display: inline-block;
+    }
+    .footer-cta:hover { background: var(--accent); color: #0d1b2a; }
+    .footer-copy { margin-top: 4rem; font-size: .72rem; color: rgba(245,240,232,.22); letter-spacing: .2em; }
+
+    /* FADE-IN */
+    .fade-in { opacity: 0; transform: translateY(40px); transition: opacity .9s ease, transform .9s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      nav { padding: 1.5rem; }
+      .nav-links { display: none; }
+      .retreats-grid { grid-template-columns: 1fr; }
+      .education-block { grid-template-columns: 1fr; gap: 3rem; }
+      .section-wrap { padding: 5rem 1.5rem; }
+    }
+  </style>
 </head>
-
 <body>
 
-<div id="root"></div>
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">La Voie des Saisons</div>
+  <ul class="nav-links">
+    <li><a href="#prologue">Origine</a></li>
+    <li><a href="#retraites">Retraites</a></li>
+    <li><a href="#rituels">Rituels</a></li>
+    <li><a href="#education">Éducation</a></li>
+  </ul>
+</nav>
 
-<script type="text/babel" src="voie_des_saisons.jsx"></script>
+<!-- HERO -->
+<section id="hero">
+  <div id="stars"></div>
 
+  <svg class="mountain-bg" viewBox="0 0 1200 250" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 250 L200 80 L350 150 L500 30 L650 120 L750 60 L900 140 L1050 20 L1200 100 L1200 250 Z" fill="#8ba7c4"/>
+    <path d="M0 250 L150 140 L280 190 L420 100 L560 180 L680 110 L820 170 L950 90 L1100 160 L1200 130 L1200 250 Z" fill="#2c4a6e" opacity=".6"/>
+  </svg>
+
+  <svg class="waves-bg" viewBox="0 0 1200 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 100 Q150 50 300 100 Q450 150 600 100 Q750 50 900 100 Q1050 150 1200 100 L1200 200 L0 200 Z" fill="#e8a45a" opacity=".4"/>
+    <path d="M0 120 Q200 80 400 120 Q600 160 800 120 Q1000 80 1200 120 L1200 200 L0 200 Z" fill="#4a7c9e" opacity=".3"/>
+  </svg>
+
+  <div class="hero-content">
+    <p class="eyebrow">Le Saisonisme</p>
+    <h1 class="hero-title">La Voie<br>des Saisons</h1>
+    <p class="hero-subtitle">Natura non facit saltus</p>
+    <p class="hero-tagline">
+      Deux fois par an, quitter la ville.<br>
+      Retrouver la montagne. Retrouver la mer.<br>
+      Retrouver ce que l'on est.
+    </p>
+  </div>
+
+  <div class="scroll-cue">
+    <span>Descendre</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- PROLOGUE -->
+<section id="prologue">
+  <div class="section-wrap">
+    <div class="fade-in">
+      <p class="section-label">Le Livre des Saisons</p>
+      <h2 class="section-title">Prologue</h2>
+    </div>
+    <div class="fade-in prologue">
+      <p>Au commencement, l'humain marchait avec la Terre. Il connaissait le froid de la montagne et la lumière de la mer. Il respirait avec les saisons, et son esprit était calme.</p>
+      <p>Mais les cités grandirent, les foules se serrèrent, et les hommes oublièrent le rythme du monde.</p>
+      <p>Alors la Terre continua seule son travail : les marées montaient, les montagnes gelaient, les forêts poussaient sans repos.</p>
+      <p><em>Car la nature ne s'arrête jamais.</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- RETRAITES -->
+<section id="retraites">
+  <div class="head fade-in">
+    <p class="section-label">Les deux fêtes sacrées</p>
+    <h2 class="section-title">Les Retraites</h2>
+  </div>
+  <div class="retreats-grid fade-in">
+    <div class="retreat-card card-white">
+      <div class="retreat-card-bg"></div>
+      <div class="retreat-card-overlay"></div>
+      <div class="retreat-content">
+        <p class="retreat-season">Janvier – Mars · Montagne</p>
+        <h3 class="retreat-name">La Retraite<br>Blanche</h3>
+        <p class="retreat-meaning">Purification &amp; Silence</p>
+        <div class="tags">
+          <span class="tag">7 jours</span>
+          <span class="tag">5–15 ans</span>
+          <span class="tag">Hors saison</span>
+        </div>
+      </div>
+    </div>
+    <div class="retreat-card card-tide">
+      <div class="retreat-card-bg"></div>
+      <div class="retreat-card-overlay"></div>
+      <div class="retreat-content">
+        <p class="retreat-season">Juin ou Septembre · Mer</p>
+        <h3 class="retreat-name">La Retraite<br>des Marées</h3>
+        <p class="retreat-meaning">Abondance &amp; Énergie</p>
+        <div class="tags">
+          <span class="tag">7 jours</span>
+          <span class="tag">5–15 ans</span>
+          <span class="tag">Hors saison</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RITUELS -->
+<section id="rituels">
+  <div class="section-wrap">
+    <div class="fade-in">
+      <p class="section-label">Pratiques sacrées</p>
+      <h2 class="section-title">Les Rituels</h2>
+    </div>
+    <div class="fade-in">
+      <div class="ritual-toggle">
+        <button class="ritual-btn active" data-target="blanche">Retraite Blanche</button>
+        <button class="ritual-btn" data-target="marees">Retraite des Marées</button>
+      </div>
+      <p class="ritual-context" id="ritual-context"></p>
+      <div class="rituals-grid" id="rituals-grid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="section-wrap">
+    <div class="fade-in">
+      <p class="section-label">Devoir moral</p>
+      <h2 class="section-title">L'Éducation<br>Sacrée</h2>
+    </div>
+    <div class="fade-in education-block">
+      <div>
+        <p class="edu-intro">La retraite n'est pas un loisir. C'est une obligation morale. L'enfant doit honorer la connaissance comme la nature honore le travail.</p>
+        <ul class="edu-duties">
+          <li>Devoir de bonnes notes — l'excellence scolaire est une offrande à la saison suivante.</li>
+          <li>Devoir de rattrapage — aucune lacune ne sera portée dans la nature.</li>
+          <li>Devoir des parents — suivre, accompagner, exiger sans cruauté.</li>
+        </ul>
+      </div>
+      <div class="principle-box">
+        <p class="principle-text">
+          Chaque famille doit quitter la ville <strong>deux fois par an</strong> pour retrouver la nature.<br><br>
+          Car celui qui ne quitte jamais la foule <strong>oublie qu'il fait partie du monde vivant.</strong>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fade-in">
+    <p class="footer-title">La Voie des Saisons vous attend.</p>
+    <p class="footer-sub">Rejoindre la communauté</p>
+    <button class="footer-cta">Entrer dans la voie</button>
+    <p class="footer-copy">Le Saisonisme · Fondé sur le Livre des Saisons · La nature ne s'arrête jamais</p>
+  </div>
+</footer>
+
+<script>
+  // Étoiles
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 60; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2 + 1;
+    s.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*80}%;left:${Math.random()*100}%;--dur:${(Math.random()*3+2).toFixed(1)}s;--op:${(Math.random()*.6+.2).toFixed(2)};animation-delay:${(Math.random()*4).toFixed(2)}s;`;
+    starsEl.appendChild(s);
+  }
+
+  // Données rituels
+  const rituals = {
+    blanche: {
+      context: "La montagne enseigne la discipline — objectif : reconnecter avec le calme et la rigueur de la nature.",
+      items: [
+        { num:"01", name:"L'Effort du Silence",    desc:"La famille accomplit une activité physique d'au moins une heure en montagne, sans prononcer un mot. Le silence est la première discipline." },
+        { num:"02", name:"La Veillée du Feu",       desc:"Une soirée entière sans écrans, réunie autour d'un feu ou d'une lumière douce. La parole revient, lente et vraie." },
+        { num:"03", name:"L'Épreuve du Froid",      desc:"Contact volontaire avec le froid — neige, air vif, eau froide. Le corps apprend ce que l'esprit oublie : la résistance est une grâce." },
+        { num:"04", name:"Le Serment de Travail",   desc:"Les enfants lisent à voix haute leurs objectifs scolaires. Devant la montagne, les mots portent le poids des engagements." },
+      ]
+    },
+    marees: {
+      context: "La mer enseigne la liberté — objectif : reconnecter avec le mouvement et l'abondance du monde.",
+      items: [
+        { num:"01", name:"La Marche des Marées",        desc:"Marcher au bord de l'eau au lever du soleil. La mer n'attend pas ; ceux qui la suivent apprennent le mouvement du monde." },
+        { num:"02", name:"L'Immersion",                  desc:"Entrer dans la mer ou l'océan. Se laisser traverser par l'eau, réapprendre que le corps appartient à la Terre." },
+        { num:"03", name:"Le Repas du Rivage",           desc:"Manger ensemble, face à l'eau, sans hâte. L'abondance n'est pas ce que l'on accumule, mais ce que l'on partage." },
+        { num:"04", name:"La Promesse de Transmission",  desc:"Une discussion familiale sur l'avenir, les rêves des enfants, les responsabilités des parents. Ce que la mer emporte, la mémoire le garde." },
+      ]
+    }
+  };
+
+  function renderRituals(key) {
+    const data = rituals[key];
+    document.getElementById('ritual-context').textContent = data.context;
+    document.getElementById('rituals-grid').innerHTML = data.items.map(r => `
+      <div class="ritual-item">
+        <div class="ritual-number">${r.num}</div>
+        <p class="ritual-name">${r.name}</p>
+        <p class="ritual-desc">${r.desc}</p>
+      </div>`).join('');
+  }
+  renderRituals('blanche');
+
+  document.querySelectorAll('.ritual-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.ritual-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderRituals(btn.dataset.target);
+    });
+  });
+
+  // Scroll fade-in
+  const observer = new IntersectionObserver(
+    entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+    { threshold: 0.12 }
+  );
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
 </body>
 </html>
